@@ -402,11 +402,13 @@ enum rb_builtin_attr {
 
 typedef VALUE (*rb_jit_func_t)(struct rb_execution_context_struct *, struct rb_control_frame_struct *);
 
+#include <yk.h>
 struct rb_iseq_constant_body {
     enum rb_iseq_type type;
 
     unsigned int iseq_size;
     VALUE *iseq_encoded; /* encoded iseq (insn addr and operands) */
+    YkLocation *yklocs;
 
     /**
      * parameter information

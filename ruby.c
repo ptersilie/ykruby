@@ -49,6 +49,7 @@
 #include "internal/file.h"
 #include "internal/inits.h"
 #include "internal/io.h"
+#include <yk.h>
 #include "internal/load.h"
 #include "internal/loadpath.h"
 #include "internal/missing.h"
@@ -1823,6 +1824,7 @@ ruby_opt_init(ruby_cmdline_options_t *opt)
     memset(ruby_vm_redefined_flag, 0, sizeof(ruby_vm_redefined_flag));
 
     ruby_init_prelude();
+    yk_init();
 
     if (rb_namespace_available())
         rb_initialize_main_namespace();

@@ -6591,6 +6591,9 @@ vm_opt_plus(VALUE recv, VALUE obj)
     }
 }
 
+// FIXME: Needs to be outlined until we've implemented
+// `llvm.ssub.with.overflow.i64`.
+__attribute__((yk_outline))
 static VALUE
 vm_opt_minus(VALUE recv, VALUE obj)
 {

@@ -19,6 +19,7 @@
 
 #include "ruby/ruby.h"
 #include "ruby/atomic.h"
+#include <yk.h>
 #include "ruby/debug.h"
 #include "ruby/thread.h"
 #include "ruby/util.h"
@@ -2391,6 +2392,9 @@ newobj_cache_miss(rb_objspace_t *objspace, rb_ractor_newobj_cache_t *cache, size
     return obj;
 }
 
+// FIXME: Inlining this causes guard failures when the cache misses which we
+// can't codegen yet.
+__attribute__((yk_outline))
 static VALUE
 newobj_alloc(rb_objspace_t *objspace, rb_ractor_newobj_cache_t *cache, size_t heap_idx, bool vm_locked)
 {

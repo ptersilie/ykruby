@@ -20,6 +20,7 @@
 #undef RUBY_EXPORT
 #include "ruby.h"
 #include "vm_debug.h"
+#include <yk.h>
 #include "internal/sanitizers.h"
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
@@ -57,6 +58,7 @@ main(int argc, char **argv)
 #ifdef HAVE_LOCALE_H
     setlocale(LC_CTYPE, "");
 #endif
+    yk_init();
 
     ruby_sysinit(&argc, &argv);
     return ruby_start_main(rb_main, argc, argv);

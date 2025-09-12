@@ -52,6 +52,19 @@ if you are a committer.
 
 See [Building Ruby](https://docs.ruby-lang.org/en/master/contributing/building_ruby_md.html)
 
+## Building YKRuby
+
+Create a new folder `build` and `cd` into it:
+
+```
+mkdir build && cd build
+```
+
+Run the `../ykconfigure.sh` which runs Ruby's `configure` script with some
+extra flags and patches the resulting `Makefile`.
+
+Finally, run `make miniruby` to compile `miniruby`.
+
 ## Ruby home page
 
 https://www.ruby-lang.org/

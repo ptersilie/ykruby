@@ -26,7 +26,8 @@
 
 /** Wraps (or simulates) `__attribute__((pure))` */
 #if RBIMPL_HAS_ATTRIBUTE(pure)
-# define RBIMPL_ATTR_PURE() __attribute__((__pure__))
+// FIXME: Compilation fails with pure functions enabled.
+# define RBIMPL_ATTR_PURE()
 #elif RBIMPL_COMPILER_SINCE(SunPro, 5, 10, 0)
 # define RBIMPL_ATTR_PURE() _Pragma("does_not_write_global_data")
 #else

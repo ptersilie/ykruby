@@ -10,6 +10,7 @@
 **********************************************************************/
 
 #include <math.h>
+#include <yk.h>
 
 #if USE_YJIT
 // The number of instructions executed on vm_exec_core. --yjit-stats uses this.
@@ -97,6 +98,7 @@ vm_exec_core(rb_execution_context_t *ec)
     reg_cfp = ec->cfp;
     reg_pc = reg_cfp->pc;
 
+  YkMT *mt;
   first:
     INSN_DISPATCH();
 /*****************/
