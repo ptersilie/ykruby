@@ -358,6 +358,30 @@ static void iseq_add_setlocal(rb_iseq_t *iseq, LINK_ANCHOR *const seq, const NOD
 #define IS_NEXT_INSN_ID(link, insn) \
     ((link)->next && IS_INSN((link)->next) && IS_INSN_ID((link)->next, insn))
 
+void yk_generate_locations(struct rb_iseq_constant_body *body) {
+    body->yklocs = calloc(body->iseq_size, sizeof(YkLocation));
+    unsigned long pos = 0;
+    while (pos < body->iseq_size) {
+        int opcode = rb_vm_insn_addr2opcode((void *)body->iseq_encoded[pos]);
+        const VALUE instr = body->iseq_encoded[pos];
+        switch(instr) {
+            case BIN(branchif):
+              ; long dst = body->iseq_encoded[pos+1];
+              if (dst < 0) {
+                // Add a new location to backwards branches.
+                body->yklocs[pos] = yk_location_new();
+              } else {
+                body->yklocs[pos] = yk_location_null();
+              }
+              break;
+            default:
+              body->yklocs[pos] = yk_location_null();
+              break;
+        }
+        pos = pos + insn_len(opcode);
+    }
+}
+
 /* error */
 #if CPDEBUG > 0
 RBIMPL_ATTR_NORETURN()
@@ -2837,27 +2861,7 @@ iseq_set_sequence(rb_iseq_t *iseq, LINK_ANCHOR *const anchor)
     body->iseq_encoded = (void *)generated_iseq;
     body->iseq_size = code_index;
     body->stack_max = stack_max;
-    body->yklocs = calloc(code_index, sizeof(YkLocation));
-    int pos = 0;
-    while (pos < code_index) {
-        int opcode = rb_vm_insn_addr2opcode((void *)body->iseq_encoded[pos]);
-        const VALUE instr = body->iseq_encoded[pos];
-        switch(instr) {
-            case BIN(branchif):
-              ; int dst = body->iseq_encoded[pos+1];
-              if (dst < 0) {
-                // Add a new location to backwards branches.
-                body->yklocs[pos] = yk_location_new();
-              } else {
-                body->yklocs[pos] = yk_location_null();
-              }
-              break;
-            default:
-              body->yklocs[pos] = yk_location_null();
-              break;
-        }
-        pos = pos + insn_len(opcode);
-    }
+    yk_generate_locations(body);
 
     if (ISEQ_COMPILE_DATA(iseq)->is_single_mark_bit) {
         body->mark_bits.single = ISEQ_COMPILE_DATA(iseq)->mark_bits.single;
@@ -13075,6 +13079,7 @@ ibf_load_code(const struct ibf_load *load, rb_iseq_t *iseq, ibf_offset_t bytecod
 
     load_body->iseq_encoded = code;
     load_body->iseq_size = code_index;
+    yk_generate_locations(load_body);
 
     if (ISEQ_MBITS_BUFLEN(load_body->iseq_size) == 1) {
         load_body->mark_bits.single = mark_offset_bits[0];
